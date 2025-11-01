@@ -1,107 +1,89 @@
+# Sneaky Golem
 
-A fun little time-killer / desktop curiosity project.
+Sneaky Golem is a lightweight Windows prank program that quietly waits a random amount of time, then fades in a small transparent image at a random position on the screen while looping a short sound.  
+When the user moves the cursor over the image, the sound stops, the image fades out, and the program returns to its waiting state.
 
-Every few minutes, a mysterious transparent image (“the golem”) briefly appears at a random spot on your screen.  
-If your mouse touches it — *poof!* — it disappears with a sound. Then it hides again and waits for the next time.
-
----
-
-## ✨ Features
-
-- Random delay between appearances (`30–900s` by default)
-- Transparent always-on-top image overlay (PNG)
-- Plays a sound when your mouse enters the image
-- Automatically hides and repeats forever
-- Hides from Windows taskbar and Alt + Tab (best-effort)
-- Works cross-platform (Windows, macOS, Linux)
+This project is intended purely for harmless, local use and demonstrates timing, transparency, and window control techniques in Python.
 
 ---
 
-## 🧩 Requirements
+## Features
 
-**Python 3.8+**  
-and the following libraries:
+- Random delay between appearances (configurable)
+- Smooth fade-in animation
+- Looped sound while visible
+- Immediate stop and hide on hover
+- Random position on each appearance
+- Hidden from taskbar and Alt+Tab (best effort on Windows)
+- Always-on-top overlay window
 
+---
+
+## Requirements
+
+- Windows 10 or 11  
+- Python 3.8 or newer
+
+Install dependencies:
 ```bash
-pip install pillow simpleaudio
+python -m pip install pillow pyinstaller
 ```
 
-If you’re on Linux, you may also need:
-
-```bash
-sudo apt install python3-tk
+Files required in the same directory:
 ```
-
----
-
-## 📂 Files
-
-```
-golem_loop.py     # Main script
-golem.png          # Transparent image that appears
-mystic.wav         # Sound played when found
+golem_loop.py
+golem.png
+mystic.wav
 ```
 
 ---
 
-## ▶️ Usage
+## Running
 
-Run the script directly:
-
+Run directly from source:
 ```bash
 python golem_loop.py
 ```
 
-Then just keep doing your work —  
-after a random delay, the “golem” will silently appear somewhere on your screen.
-
-Hover your mouse over it to make it vanish (and optionally play a sound).
+The image will appear after a random delay (default: 1–100 seconds).  
+Hovering the mouse over it immediately stops the sound and hides the window.
 
 ---
 
-## 🔇 Testing Without Sound
+## Building an Executable
 
-To test quietly, you can **disable sound** in any of these ways:
+To package it into a single `.exe` file (no console window):
+```bash
+python -m PyInstaller --onefile --noconsole ^
+  --add-data "golem.png;." ^
+  --add-data "mystic.wav;." ^
+  golem_loop.py
+```
 
-1. **Simplest:** Rename or delete the `mystic.wav` file  
-   (the script will continue without audio)
-
-2. **Code toggle:**  
-   Edit `golem_loop.py` and replace this function:
-   ```python
-   def play_sound_nonblocking():
-       pass  # disable sound
-   ```
-
-3. **Or** add a variable `ENABLE_SOUND = False` and skip playback in `_on_found()`.
-
----
-
-## ⚙️ Configuration
-
-You can tweak these constants near the top of `golem_loop.py`:
-
-```python
-MIN_DELAY_S = 30       # Minimum seconds between appearances
-MAX_DELAY_S = 900      # Maximum seconds between appearances
-MARGIN = 20            # Distance from screen edges
-AUTO_HIDE_AFTER_S = None  # Auto-hide after N seconds (None = disabled)
+The finished executable will be created under:
+```
+dist\golem_loop.exe
 ```
 
 ---
 
-## 🪄 Tips & Ideas
+## Configuration
 
-- Use your own transparent PNGs for fun effects
-- Replace the sound with something spooky or funny
-- Chain multiple images appearing in sequence
-- Try making it fade in/out instead of popping instantly
+All behavior can be adjusted inside `golem_loop.py`:
 
----
-
-## ⚠️ Notes
-
-- The taskbar/Alt-Tab hiding trick uses Windows API calls and may not work on all systems.
-- The program does not modify files or use networking — it’s safe to run.
+| Variable | Description | Default |
+|-----------|--------------|----------|
+| `MIN_DELAY_S` / `MAX_DELAY_S` | Range for random wait time before appearing | 1 / 100 |
+| `TARGET_WIDTH` | Width of the image in pixels (maintains aspect ratio) | 128 |
+| `FADE_IN_MS` | Total fade-in duration (milliseconds) | 1500 |
+| `FADE_STEPS` | Number of alpha steps during fade-in | 30 |
+| `COOLDOWN_AFTER_FOUND_S` | Delay after disappearance before next loop | 1.0 |
 
 ---
+
+## Notes
+
+- Works best on Windows desktop environments and borderless windowed applications.
+- Exclusive fullscreen applications may prevent the overlay from appearing.
+- The process remains visible in Task Manager under its executable name.
+- This project is for demonstration and entertainment purposes only. Use responsibly.
